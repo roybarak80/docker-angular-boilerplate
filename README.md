@@ -1,59 +1,119 @@
-# AngularDockerApp
+# Angular 17 Docker App
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.3.
+This project contains an Angular 17 application that can be built and served using Docker with Nginx.
 
-## Development server
+## 📦 Prerequisites
 
-To start a local development server, run:
+- [Node.js](https://nodejs.org/) (for local development)
+- [Docker](https://www.docker.com/)
+- Angular CLI installed globally (for local development):
+  ```bash
+  npm install -g @angular/cli
+  ```
+
+---
+
+## 🚀 Local Development
+
+To run the app locally (outside Docker):
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Visit: [http://localhost:4200](http://localhost:4200)
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 🐳 Docker Setup
 
-```bash
-ng generate component component-name
-```
+### 1. Build the App with Docker
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+From the project root (where the Dockerfile is located), run:
 
 ```bash
-ng generate --help
+docker build -t angular-docker-app .
 ```
 
-## Building
+> 🔁 Make sure to update `angular-docker-app` in the Dockerfile with the actual project name from `angular.json`.
 
-To build the project run:
+### 2. Run the Docker Container
 
 ```bash
-ng build
+docker run -d -p 80:80 angular-docker-app
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Visit: [http://localhost](http://localhost)
 
-## Running unit tests
+---
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## 🛠 Project Structure
+
+```
+angular-docker-app/
+├── src/
+├── dist/
+├── Dockerfile
+├── nginx.conf
+├── package.json
+└── angular.json
+```
+
+---
+
+## 🔧 Custom Nginx Config (Optional)
+
+If you want Angular routing to work (e.g., deep linking), include this file as `nginx.conf`:
+
+```nginx
+server {
+  listen 80;
+  server_name localhost;
+
+  root /usr/share/nginx/html;
+  index index.html;
+
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
+}
+```
+
+And make sure your Dockerfile contains:
+
+```dockerfile
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+```
+
+---
+
+## ✅ Final Notes
+
+- This setup uses a **multi-stage build** for minimal image size.
+- The Angular app is served using **Nginx** in the final container.
+- Use `--project your-app-name` if you have multiple Angular projects.
+
+---
+
+## 🧼 Clean Up
+
+To stop and remove the container:
 
 ```bash
-ng test
+docker ps
+docker stop <container_id>
+docker rm <container_id>
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+To remove the image:
 
 ```bash
-ng e2e
+docker rmi angular-docker-app
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+## 📄 License
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+MIT
